@@ -9,14 +9,17 @@ import {
     Patch,
     Delete,
     HttpCode,
-    HttpStatus
+    HttpStatus,
+    Inject
 } from '@nestjs/common';
 
 import { FotosService } from './fotos.service.js';
+import { Foto } from './entities/foto.entity.js';
 
-@Controller('fotos') // ruta base: /fotos
+@Controller('fotos')
 export class FotosController {
     constructor(
+        @Inject(FotosService)
         private readonly fotosService: FotosService,
     ) {}
 
@@ -31,14 +34,14 @@ export class FotosController {
     }
 
     @Post()
-    create(@Body() datos: Parameters<FotosService['create']>[0]) {
+    create(@Body() datos: Partial<Foto>) {
         return this.fotosService.create(datos);
     }
 
     @Patch(':id')
     update(
         @Param('id', ParseIntPipe) id: number,
-        @Body() datos: Parameters<FotosService['update']>[1]
+        @Body() datos: Partial<Foto>
     ) {
         return this.fotosService.update(id, datos);
     }

@@ -1,46 +1,50 @@
 
-import { Injectable, NotFoundException }
-    from '@nestjs/common';
-
-type Foto = {
-    id: number;
-    titulo: string;
-    calificacion: number;
-};
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Foto } from './entities/foto.entity.js';
 
 @Injectable()
 export class FotosService {
-    private fotos: Foto[] = [
-        { id: 1, titulo: 'Atardecer', calificacion: 4.5 },
-        { id: 2, titulo: 'Malecón', calificacion: 4.0 },
-    ];
+  constructor(
+    @InjectRepository(Foto)
+    private readonly fotosRepo: Repository<Foto>,
+  ) {}
 
-    findAll(): Foto[] {
-        return this.fotos;
+  // Consultar todas las fotos ordenadas por ID
+  findAll(): Promise<Foto[]> {
+    return this.fotosRepo.find({
+      order: { id: 'ASC' },
+    });
+  }
+
+  // Buscar una foto por ID
+  async findOne(id: number): Promise<Foto> {
+    const foto = await this.fotosRepo.findOneBy({ id });
+
+    if (!foto) {
+      throw new NotFoundException(`Foto ${id} no encontrada`);
     }
 
-    findOne(id: number): Foto {
-        const foto = this.fotos.find((f) => f.id === id);
-        if (!foto) {
-            throw new NotFoundException(`Foto ${id} no encontrada`);
-        }
-        return foto;
-    }
+    return foto;
+  }
 
-    create(datos: Omit<Foto, 'id'>): Foto {
-        const nueva = { id: this.fotos.length + 1, ...datos };
-        this.fotos.push(nueva);
-        return nueva;
-    }
+  // Crear una nueva foto
+  create(datos: Partial<Foto>): Promise<Foto> {
+    const foto = this.fotosRepo.create(datos);
+    return this.fotosRepo.save(foto);
+  }
 
-    update(id: number, datos: Partial<Omit<Foto, 'id'>>): Foto {
-        const foto = this.findOne(id);
-        Object.assign(foto, datos);
-        return foto;
-    }
+  // Actualizar una foto usando save()
+  async update(id: number, datos: Partial<Foto>): Promise<Foto> {
+    const foto = await this.findOne(id);
+    Object.assign(foto, datos);
+    return this.fotosRepo.save(foto);
+  }
 
-    remove(id: number): void {
-        this.findOne(id);
-        this.fotos = this.fotos.filter((f) => f.id !== id);
-    }
+  // Eliminar una foto usando remove()
+  async remove(id: number): Promise<void> {
+    const foto = await this.findOne(id);
+    await this.fotosRepo.remove(foto);
+  }
 }
