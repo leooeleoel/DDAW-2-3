@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { createObserveModule } from '@nestjs/observe';
 import { FotosModule } from './fotos/fotos.module.js';
+import { AlbumesModule } from './albumes/albumes.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -33,6 +34,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
 
     FotosModule,
+
+    AlbumesModule,
   ],
   controllers: [],
   providers: [],

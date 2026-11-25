@@ -5,6 +5,9 @@ import {
     Get,
     Param,
     ParseIntPipe,
+    ParseFloatPipe,
+    DefaultValuePipe,
+    Query,
     Post,
     Patch,
     Delete,
@@ -24,8 +27,14 @@ export class FotosController {
     ) {}
 
     @Get()
-    findAll() {
-        return this.fotosService.findAll();
+    findAll(
+        @Query('min', new DefaultValuePipe(0), ParseFloatPipe) min: number,
+        @Query('max', new DefaultValuePipe(5), ParseFloatPipe) max: number,
+        @Query('q') q: string | undefined,
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    ) {
+        return this.fotosService.findAll({ min, max, q, page, limit });
     }
 
     @Get(':id')

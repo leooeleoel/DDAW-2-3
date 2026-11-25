@@ -5,7 +5,13 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+
+import { Album } from '../../albumes/album.entity.js';
+import { Etiqueta } from './etiqueta.entity.js';
 
 @Entity('fotos')
 export class Foto {
@@ -22,7 +28,7 @@ export class Foto {
   calificacion: number;
 
   @Column({ type: 'varchar' })
-  ruta: string; // URL de la imagen
+  ruta: string;
 
   @Column({ type: 'varchar', nullable: true })
   fotografo: string | null;
@@ -32,4 +38,20 @@ export class Foto {
 
   @UpdateDateColumn({ type: 'timestamp' })
   actualizadoEn: Date;
+
+  // N:1 Muchas fotos pertenecen a un álbum
+  @ManyToOne(() => Album, (album) => album.fotos, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  album: Album | null;
+
+  // N:M Una foto tiene muchas etiquetas y viceversa
+  @ManyToMany(() => Etiqueta, (etiqueta) => etiqueta.fotos)
+  @JoinTable({
+    name: 'fotos_etiquetas',
+    joinColumn: { name: 'foto_id' },
+    inverseJoinColumn: { name: 'etiqueta_id' },
+  })
+  etiquetas: Etiqueta[];
 }
