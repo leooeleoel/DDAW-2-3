@@ -31,7 +31,7 @@ export class Foto {
   ruta: string;
 
   @Column({ type: 'varchar', nullable: true })
-  fotografo: string | null;
+fotografo: string | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   creadoEn: Date;
