@@ -1,0 +1,64 @@
+
+@api = http://localhost:3000/api
+
+### Listar fotos
+GET {{api}}/fotos
+
+### Listar con filtros
+GET {{api}}/fotos?min=3&max=5&q=foto&page=1&limit=5
+
+### Consultar una foto
+GET {{api}}/fotos/1
+
+### Crear foto
+POST {{api}}/fotos
+Content-Type: application/json
+
+{
+  "titulo": "Cerro Santa Ana",
+  "calificacion": 4.8,
+  "ruta": "https://picsum.photos/id/1/600/400",
+  "albumId": 2,
+  "etiquetas": ["ciudad", "faro"]
+}
+
+### Actualizar parcialmente
+PATCH {{api}}/fotos/21
+Content-Type: application/json
+
+{
+  "calificacion": 5
+}
+
+### Eliminar
+DELETE {{api}}/fotos/21
+
+### Listar álbumes
+GET {{api}}/albumes
+
+### Crear álbum
+POST {{api}}/albumes
+Content-Type: application/json
+
+{
+  "nombre": "Viajes"
+}
+
+### Crear álbum duplicado (debe responder 409 Conflict)
+POST {{api}}/albumes
+Content-Type: application/json
+
+{
+  "nombre": "Viajes"
+}
+
+### Actualizar parcialmente un álbum (reemplazar 1 por un ID existente)
+PATCH {{api}}/albumes/1
+Content-Type: application/json
+
+{
+  "nombre": "Vacaciones"
+}
+
+### Eliminar álbum (las fotos relacionadas conservan albumId null)
+DELETE {{api}}/albumes/1

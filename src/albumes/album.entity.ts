@@ -9,7 +9,7 @@ export class Album {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @Column({ type: 'varchar', length: 80 })
+  @Column({ type: 'varchar', length: 80, unique: true })
   nombre: string;
 
   // 1:N Un álbum tiene muchas fotos

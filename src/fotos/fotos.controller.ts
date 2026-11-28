@@ -1,75 +1,62 @@
 
 import {
-    Body,
-    Controller,
-    Get,
-    Param,
-    ParseIntPipe,
-    ParseFloatPipe,
-    DefaultValuePipe,
-    Query,
-    Post,
-    Patch,
-    Delete,
-    HttpCode,
-    HttpStatus,
-    Inject
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+  Post,
+  Patch,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Inject,
 } from '@nestjs/common';
 
+import { UpdateFotoDto } from './dto/update-foto.dto.js';
+import { CreateFotoDto } from './dto/create-foto.dto.js';
+import { QueryFotosDto } from './dto/query-fotos.dto.js';
 import { FotosService } from './fotos.service.js';
-import { Foto } from './entities/foto.entity.js';
 
 @Controller('fotos')
 export class FotosController {
-    constructor(
-        @Inject(FotosService)
-        private readonly fotosService: FotosService,
-    ) {}
+  constructor(
+    @Inject(FotosService)
+    private readonly fotosService: FotosService,
+  ) {}
 
-    
-@Get()
-findAll(
-    @Query('min', new DefaultValuePipe(0), ParseFloatPipe) min: number,
-    @Query('max', new DefaultValuePipe(5), ParseFloatPipe) max: number,
-    @Query('q') q: string | undefined,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('etiqueta') etiqueta: string | undefined,
-    @Query('orden') orden: 'asc' | 'desc' = 'desc',
-) {
-    return this.fotosService.findAll({
-        min,
-        max,
-        q,
-        page,
-        limit,
-        etiqueta,
-        orden,
-    });
-}
+  // Consultar fotos con filtros y paginación
+  @Get()
+  findAll(@Query() filtro: QueryFotosDto) {
+    return this.fotosService.findAll(filtro);
+  }
 
+  // Buscar una foto por ID
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.fotosService.findOne(id);
+  }
 
-    @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.fotosService.findOne(id);
-    }
+  // Crear una foto (201 Created por defecto)
+  @Post()
+  create(@Body() datos: CreateFotoDto) {
+    return this.fotosService.create(datos);
+  }
 
-    @Post()
-    create(@Body() datos: Partial<Foto>) {
-        return this.fotosService.create(datos);
-    }
+  // Actualizar una foto
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() datos: UpdateFotoDto,
+  ) {
+    return this.fotosService.update(id, datos);
+  }
 
-    @Patch(':id')
-    update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() datos: Partial<Foto>
-    ) {
-        return this.fotosService.update(id, datos);
-    }
-
-    @Delete(':id')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    remove(@Param('id', ParseIntPipe) id: number) {
-        return this.fotosService.remove(id);
-    }
+  // Eliminar una foto (204 No Content)
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.fotosService.remove(id);
+  }
 }

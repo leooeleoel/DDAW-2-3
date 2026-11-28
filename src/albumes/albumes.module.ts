@@ -5,8 +5,7 @@ import { Album } from './album.entity.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Album]),
-],
+  imports: [TypeOrmModule.forFeature([Album])],
   controllers: [AlbumesController],
   providers: [AlbumesService],
 })
