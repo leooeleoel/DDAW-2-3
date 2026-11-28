@@ -26,16 +26,28 @@ export class FotosController {
         private readonly fotosService: FotosService,
     ) {}
 
-    @Get()
-    findAll(
-        @Query('min', new DefaultValuePipe(0), ParseFloatPipe) min: number,
-        @Query('max', new DefaultValuePipe(5), ParseFloatPipe) max: number,
-        @Query('q') q: string | undefined,
-        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    ) {
-        return this.fotosService.findAll({ min, max, q, page, limit });
-    }
+    
+@Get()
+findAll(
+    @Query('min', new DefaultValuePipe(0), ParseFloatPipe) min: number,
+    @Query('max', new DefaultValuePipe(5), ParseFloatPipe) max: number,
+    @Query('q') q: string | undefined,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('etiqueta') etiqueta: string | undefined,
+    @Query('orden') orden: 'asc' | 'desc' = 'desc',
+) {
+    return this.fotosService.findAll({
+        min,
+        max,
+        q,
+        page,
+        limit,
+        etiqueta,
+        orden,
+    });
+}
+
 
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {

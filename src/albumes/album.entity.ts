@@ -16,3 +16,4 @@ export class Album {
   @OneToMany(() => Foto, (foto) => foto.album)
   fotos: Foto[];
 }
+

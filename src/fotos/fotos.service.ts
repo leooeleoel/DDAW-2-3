@@ -10,6 +10,8 @@ export interface FiltroFotos {
   q?: string;
   page: number;
   limit: number;
+  etiqueta?: string;
+  orden?: 'asc' | 'desc';
 }
 
 @Injectable()
@@ -20,33 +22,41 @@ export class FotosService {
   ) {}
 
   // Consultar fotos con filtros y paginación
-  async findAll({
-    min,
-    max,
-    q,
+async findAll({
+  min,
+  max,
+  q,
+  page,
+  limit,
+  etiqueta,
+  orden = 'desc',
+}: FiltroFotos) {
+  const [data, total] = await this.fotosRepo.findAndCount({
+    where: {
+      calificacion: Between(min, max),
+      ...(q ? { titulo: ILike(`%${q}%`) } : {}),
+      ...(etiqueta ? {
+        etiquetas: { nombre: etiqueta },
+      } : {}),
+    },
+    relations: {
+      album: true,
+      etiquetas: true,
+    },
+    order: {
+      calificacion: orden.toUpperCase() as 'ASC' | 'DESC',
+    },
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+
+  return {
+    data,
+    total,
     page,
     limit,
-  }: FiltroFotos) {
-    const [data, total] = await this.fotosRepo.findAndCount({
-      where: {
-        calificacion: Between(min, max),
-        ...(q ? { titulo: ILike(`%${q}%`) } : {}),
-      },
-      relations: {
-        etiquetas: true,
-      },
-      order: { id: 'ASC' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-
-    return {
-      data,
-      total,
-      page,
-      limit,
-    };
-  }
+  };
+}
 
   // Buscar una foto por ID incluyendo sus relaciones
   async findOne(id: number): Promise<Foto> {
